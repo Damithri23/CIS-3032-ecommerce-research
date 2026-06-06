@@ -1,23 +1,25 @@
+import streamlit as st
 import joblib
-import pandas as pd
+import os
 
-# load model
-model = joblib.load("model.pkl")
+# Load model
+model_path = os.path.join(os.path.dirname(__file__), "model.pkl")
+model = joblib.load(model_path)
 
-print("E-Commerce Purchase Prediction System")
+st.title("E-Commerce Purchase Prediction System")
+st.write("Predict whether a customer will complete a purchase based on price and freight value")
 
-# user input
-price = float(input("Enter product price: "))
-freight = float(input("Enter freight value: "))
+# Input fields
+price = st.number_input("Enter Product Price", min_value=0.0)
+freight = st.number_input("Enter Freight Value", min_value=0.0)
 
-# create input dataframe
-input_data = pd.DataFrame([[price, freight]], columns=['price', 'freight_value'])
+# Prediction button
+if st.button("Predict"):
+    input_data = [[price, freight]]
+    prediction = model.predict(input_data)
 
-# prediction
-prediction = model.predict(input_data)
-
-# output result
-if prediction[0] == 1:
-    print("Prediction: Positive Purchase Outcome")
-else:
-    print("Prediction: Negative Purchase Outcome")
+    if prediction[0] == 1:
+        st.success("Positive Purchase Outcome (Customer likely to buy)")
+    else:
+        st.error("Negative Purchase Outcome (Customer less likely to buy)")
+        
